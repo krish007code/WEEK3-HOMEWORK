@@ -1,23 +1,23 @@
 # WEEK3-HOMEWORK
-1. Data Loading
-
+## 1. Data Loading
 The data was uploaded to a GCS bucket. The dataset consists of 6 Parquet files: yellow_tripdata_2024-01.parquet through yellow_tripdata_2024-06.parquet.
-2. Create External Table
 
-To point BigQuery at the files residing in GCS:
+## 2. Create External Table
+
   CREATE OR REPLACE EXTERNAL TABLE `krish-485219.trips_data_all.external_yellow_tripdata`
   OPTIONS (
     format = 'PARQUET',
     uris = ['gs://your-bucket-name/yellow_tripdata_2024-*.parquet']
   );
   
-3. Create Native (Materialized) Table
-To create a standard, non-partitioned table in BigQuery storage:
+## 3. Create Native (Materialized) Table
+<em>To create a non-partitioned table in BigQuery storage:</em>
+
   CREATE OR REPLACE TABLE `krish-485219.trips_data_all.yellow_tripdata_non_partitioned` AS
   SELECT * FROM `krish-485219.trips_data_all.external_yellow_tripdata`;
 
 ## Questions
-Question 1: Counting records
+<strong>Question 1: Counting records</strong>
 query
   SELECT count(*) FROM `krish-485219.trips_data_all.yellow_tripdata_non_partitioned`;
 Answer: 20,332,093
