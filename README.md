@@ -13,13 +13,12 @@
 
 ## Overview
 
-This homework explores BigQuery optimization techniques including external tables, partitioning, clustering, and understanding query execution costs. The dataset consists of NYC Yellow Taxi trip data for the first half of 2024.
+This is my homework explores BigQuery optimization.
 
 **Total Records**: 20,332,093  
 **Dataset**: `krish-485219.trips_data_all`
 
 ---
-
 ## Data Setup
 
 ### 1. Data Loading
@@ -80,8 +79,6 @@ FROM `krish-485219.trips_data_all.yellow_tripdata_non_partitioned`;
 - **External Table**: `0 MB`
 - **Materialized Table**: `155.12 MB`
 
-**Explanation**: External tables don't store data in BigQuery, so metadata queries return 0 MB. The materialized table stores data in BigQuery's optimized columnar format.
-
 ---
 
 ### Question 3: Understanding Columnar Storage
@@ -91,8 +88,6 @@ FROM `krish-485219.trips_data_all.yellow_tripdata_non_partitioned`;
 **Answer**: 
 
 BigQuery is a columnar database that only scans the specific columns requested in the query. When querying two columns (`PULocationID`, `DOLocationID`), BigQuery must read data from both column stores, resulting in approximately double the bytes processed compared to querying a single column (`PULocationID`).
-
-**Key Concept**: This demonstrates the efficiency of columnar storage for analytical workloads where queries typically access a subset of columns.
 
 ---
 
@@ -108,7 +103,6 @@ WHERE fare_amount = 0;
 ```
 
 **Answer**: `8,333`
-
 ---
 
 ### Question 5: Partitioning and Clustering
@@ -126,11 +120,6 @@ SELECT * FROM `krish-485219.trips_data_all.external_yellow_tripdata`;
 **Answer**: 
 - **Partition by**: `tpep_dropoff_datetime` (date)
 - **Cluster by**: `VendorID`
-
-**Rationale**: 
-- Partitioning by date enables efficient time-range filtering
-- Clustering by VendorID improves query performance when filtering or grouping by vendor
-
 ---
 
 ### Question 6: Partition Benefits
@@ -148,19 +137,13 @@ WHERE tpep_dropoff_datetime BETWEEN '2024-03-01' AND '2024-03-15';
 - **Non-partitioned table**: `310.24 MB`
 - **Partitioned table**: `26.84 MB`
 
-**Improvement**: ~91% reduction in data scanned (284.40 MB saved)
-
-**Explanation**: Partitioning eliminates the need to scan irrelevant partitions, significantly reducing query costs and improving performance.
-
 ---
 
 ### Question 7: External Table Storage
 
 **Task**: Where is the data for external tables stored?
 
-**Answer**: `GCP Bucket` (Google Cloud Storage)
-
-**Note**: External tables reference data in GCS rather than storing it within BigQuery's managed storage.
+**Answer**: `GCP Bucket` 
 
 ---
 
@@ -169,9 +152,6 @@ WHERE tpep_dropoff_datetime BETWEEN '2024-03-01' AND '2024-03-15';
 **Task**: Is the statement about clustering best practices true or false?
 
 **Answer**: `False`
-
-*(Note: The specific statement wasn't provided in the original homework. Typical false statements include "clustering always improves performance" or "you should cluster on high-cardinality columns first.")*
-
 ---
 
 ### Question 9: Understanding Table Scans
@@ -179,46 +159,6 @@ WHERE tpep_dropoff_datetime BETWEEN '2024-03-01' AND '2024-03-15';
 **Task**: Determine bytes processed for a specific query operation.
 
 **Answer**: `0 bytes`
-
-**Explanation**: Certain metadata queries or queries on empty result sets may process 0 bytes, as BigQuery can answer them using table metadata without scanning actual data.
-
----
-
-## Key Learnings
-
-### 1. External vs. Native Tables
-- **External Tables**: Query data in-place from GCS, useful for ad-hoc analysis
-- **Native Tables**: Faster queries with optimized storage, better for production workloads
-
-### 2. Partitioning Benefits
-- Reduces data scanned by 90%+ for time-range queries
-- Lower query costs and faster execution
-- Best for date/timestamp columns with filtering patterns
-
-### 3. Clustering Optimization
-- Improves performance for filtering and aggregation on specific columns
-- Works best with columns having medium to high cardinality
-- Can be combined with partitioning for maximum efficiency
-
-### 4. Columnar Storage
-- BigQuery only reads requested columns
-- Ideal for analytical queries accessing subset of columns
-- Significant cost savings compared to row-based storage
-
-### 5. Query Cost Estimation
-- BigQuery provides accurate estimates before execution
-- Use estimates to optimize expensive queries
-- Partitioning and clustering dramatically reduce costs
-
----
-
-## Best Practices Applied
-
-✅ Used partitioning for time-based filtering  
-✅ Applied clustering on frequently filtered columns  
-✅ Leveraged external tables for data exploration  
-✅ Created materialized tables for production queries  
-✅ Monitored query costs with byte estimates  
 
 ---
 
@@ -229,15 +169,6 @@ WHERE tpep_dropoff_datetime BETWEEN '2024-03-01' AND '2024-03-15';
 **Time Period**: January 2024 - June 2024  
 **Data Format**: Parquet  
 **Storage Location**: Google Cloud Storage  
-
----
-
-## Additional Resources
-
-- [BigQuery Partitioning Documentation](https://cloud.google.com/bigquery/docs/partitioned-tables)
-- [BigQuery Clustering Documentation](https://cloud.google.com/bigquery/docs/clustered-tables)
-- [External Tables Guide](https://cloud.google.com/bigquery/docs/external-tables)
-- [Query Optimization Best Practices](https://cloud.google.com/bigquery/docs/best-practices-performance-overview)
 
 ---
 
